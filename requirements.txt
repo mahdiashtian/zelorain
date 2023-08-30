@@ -1,0 +1,9 @@
+redis~=5.0.0
+Telethon~=1.29.3
+aiocron~=1.8
+moviepy~=1.0.3
+pytz~=2023.3
+requests~=2.31.0
+Pillow~=10.0.0
+bs4~=0.0.1
+beautifulsoup4~=4.12.2
