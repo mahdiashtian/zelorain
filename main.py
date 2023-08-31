@@ -104,6 +104,12 @@ async def clock_in_profile_off(event):
     await client.send_message(event.chat_id, "-Clock in profile turned off")
 
 
+@client.on(events.NewMessage(from_users=admin_list, pattern="-remove profile"))
+async def remove_profile(event):
+    await delete_profile_photo(client)
+    await client.send_message(event.chat_id, "-Profile photo removed")
+
+
 worker.start()
 asyncio.get_event_loop().run_forever()
 client.run_until_disconnected()
