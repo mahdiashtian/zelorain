@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 master = config('master', cast=int)
 
-admin_list = config('admin_list', cast=lambda v: [int(s.strip()) for s in v.split(',') if v],) + [master]
+admin_list = config('admin_list', cast=lambda v: [int(s.strip()) for s in v.split(',') if v]) + [master]
 
 api_id = config('api_id')
 
