@@ -75,7 +75,7 @@ async def set_online(event):
 
 
 @client.on(events.NewMessage(from_users=admin_list, pattern="-unset online"))
-async def set_offline(event):
+async def unset_online(event):
     await r.set("online", "0")
     await client.send_message(event.chat_id, "-Keep online mode turned off")
 
