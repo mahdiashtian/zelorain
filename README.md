@@ -9,9 +9,12 @@ The Telegram Zelorain Bot is a powerful tool designed to run on your Telegram ac
 # Requirements
 - Python (3.5, 3.6, 3.7, 3.8, 3.9, 3.10)
 - Telethon (1.29.3)
+- Redis
 
 # Installation
 ```
+sudo apt update
+sudo apt install redis
 git clone https://github.com/mahdiashtian/zelorain.git
 cd zelorain
 pip install -r requirements.txt
