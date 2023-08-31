@@ -68,13 +68,13 @@ async def main(event):
     await event.reply('Hey!')
 
 
-@client.on(events.NewMessage(from_users=admin_list, pattern="-online"))
+@client.on(events.NewMessage(from_users=admin_list, pattern="-set online"))
 async def set_online(event):
     await r.set("online", "1")
     await client.send_message(event.chat_id, "-Keep online mode turned on")
 
 
-@client.on(events.NewMessage(from_users=admin_list, pattern="-offline"))
+@client.on(events.NewMessage(from_users=admin_list, pattern="-unset online"))
 async def set_offline(event):
     await r.set("online", "0")
     await client.send_message(event.chat_id, "-Keep online mode turned off")
