@@ -122,6 +122,17 @@ async def fuck(event):
         await client.edit_message(event.chat_id, message, fuck_text_sended)
 
 
+@client.on(events.NewMessage(from_users=admin_list, pattern="-ping"))
+async def ping(event):
+    x = 7
+    black_ball = "⚫️"
+    white_ball = "⚪️"
+    message = await client.send_message(event.chat_id, black_ball * x)
+    for i in range(x + 2):
+        await client.edit_message(event.chat_id, message, f"{black_ball * (x - i + 1) + (white_ball * (i + 1))}")
+    await client.edit_message(event.chat_id, message, "-Im online")
+
+
 worker.start()
 asyncio.get_event_loop().run_forever()
 client.run_until_disconnected()
