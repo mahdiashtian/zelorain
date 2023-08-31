@@ -133,6 +133,27 @@ async def ping(event):
     await client.edit_message(event.chat_id, message, "-Im online")
 
 
+@client.on(events.NewMessage(func=lambda e: e.is_private and e.chat_id not in admin_list))
+async def lock_pv(event):
+    status = await r.get("lock_pv")
+    if status == "1":
+        sender = await event.get_sender()
+        if not sender.contact:
+            await client.delete_messages(event.chat_id, event.message.id)
+
+
+@client.on(events.NewMessage(from_users=admin_list, pattern="-set lock pv"))
+async def set_lock_pv(event):
+    await r.set("lock_pv", "1")
+    await client.send_message(event.chat_id, "-Lock pv turned on")
+
+
+@client.on(events.NewMessage(from_users=admin_list, pattern="-unset lock pv"))
+async def unset_lock_pv(event):
+    await r.set("lock_pv", "0")
+    await client.send_message(event.chat_id, "-Lock pv turned off")
+
+
 worker.start()
 asyncio.get_event_loop().run_forever()
 client.run_until_disconnected()
