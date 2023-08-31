@@ -110,6 +110,18 @@ async def remove_profile(event):
     await client.send_message(event.chat_id, "-Profile photo removed")
 
 
+@client.on(events.NewMessage(from_users=admin_list, pattern="-fuck"))
+async def fuck(event):
+    fuck_text_sended = "			.\n \n                          /¯ )\n                        /¯  / \n                      /    / \n              /´¯/'   '/´¯ )\n           /'/   /     /    / / \ \n          ('(   (   (   (     |/    )\n          \                       ./ \n           \                _.•´\n             \              (\n               \             \ "
+    fuck_text_edited = "			.\n \n                          \n                         \n                       \n              /´¯/'   '/´¯ )\n           /'/   /     /    / / \ \n          ('(   (   (   (     |/    )\n          \                       ./ \n           \                _.•´\n             \              (\n               \             \ "
+    message = await client.send_message(event.chat_id, fuck_text_sended, reply_to=event.reply_to_msg_id)
+    for i in range(1, 5):
+        await asyncio.sleep(0.5)
+        await client.edit_message(event.chat_id, message, fuck_text_edited)
+        await asyncio.sleep(0.5)
+        await client.edit_message(event.chat_id, message, fuck_text_sended)
+
+
 worker.start()
 asyncio.get_event_loop().run_forever()
 client.run_until_disconnected()
