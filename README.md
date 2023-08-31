@@ -12,18 +12,24 @@ The Telegram Zelorain Bot is a powerful tool designed to run on your Telegram ac
 - Redis
 
 # Installation
+Install the required software and libraries using the following commands:
 ```
 sudo apt update
+```
+```
 sudo apt install redis
+```
+```
 git clone https://github.com/mahdiashtian/zelorain.git
 cd zelorain
 pip install -r requirements.txt
 ```
 # Usage
+Using the touch command, we create a .env file:
 ```
 touch .env
 ```
-Open the ".env" file and copy the following information into it:
+Now put the content in the box below into the file (You must use your own values!).
 ```
 api_id=123456
 api_hash="35886641ed1bfaa92e7ee30er9888"
