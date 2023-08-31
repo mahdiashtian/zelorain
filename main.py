@@ -19,9 +19,9 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-admin_master = config('admin_master', cast=int)
+master = config('master', cast=int)
 
-admin_list = config('admin_list', cast=lambda v: [int(s.strip()) for s in v.split(',')])
+admin_list = config('admin_list', cast=lambda v: [int(s.strip()) for s in v.split(',') if v],) + [master]
 
 api_id = config('api_id')
 
