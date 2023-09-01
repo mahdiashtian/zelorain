@@ -154,6 +154,29 @@ async def unset_lock_pv(event):
     await client.send_message(event.chat_id, "-Lock pv turned off")
 
 
+@client.on(events.NewMessage(from_users=admin_list, pattern="-set auto seen"))
+async def set_auto_seen(event):
+    await r.set("auto_seen", "1")
+    await client.send_message(event.chat_id, "-Auto seen turned on")
+
+
+@client.on(events.NewMessage(from_users=admin_list, pattern="-unset auto seen"))
+async def unset_auto_seen(event):
+    await r.set("auto_seen", "0")
+    await client.send_message(event.chat_id, "-Auto seen turned off")
+
+
+@client.on(events.NewMessage(func=lambda e: e.is_private))
+async def auto_seen(event):
+    status = await r.get("auto_seen")
+    if status == "1":
+        try:
+            await client.send_read_acknowledge(event.chat_id, max_id=event.id)
+        except ValueError as va:
+            sender = await event.get_input_sender()
+            await client.send_read_acknowledge(sender, max_id=event.id)
+
+
 worker.start()
 asyncio.get_event_loop().run_forever()
 client.run_until_disconnected()
