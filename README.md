@@ -14,6 +14,7 @@ The Telegram Zelorain Bot is a powerful tool designed to run on your Telegram ac
 - Seen automatically (management)
 - Block (management)
 - Automatic name change (management)
+- Self destructing downloader (management)
 - Fuck (entertainment)
 
 # Requirements
