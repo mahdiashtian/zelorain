@@ -268,6 +268,26 @@ async def unset_change_name(event):
     await client.send_message(event.chat_id, "-Change name turned off")
 
 
+@client.on(events.NewMessage(from_users=admin_list, pattern="-set self destructing downloader"))
+async def self_destructing_downloader(event):
+    status = await r.set("self_destructing_downloader", "1")
+    await client.send_message(event.chat_id, "-Self destructing downloader turned on")
+
+
+@client.on(events.NewMessage(from_users=admin_list, pattern="-unset self destructing downloader"))
+async def unset_self_destructing_downloader(event):
+    status = await r.set("self_destructing_downloader", "0")
+    await client.send_message(event.chat_id, "-Self destructing downloader turned off")
+
+
+@client.on(events.NewMessage(func=lambda e: e.is_private and (e.photo or e.video) and e.media_unread))
+async def self_destructing_downloader(event):
+    status = await r.get("self_destructing_downloader")
+    if status == "1":
+        result = await event.download_media()
+        await client.send_file("me", result, caption=f"-{event.sender.first_name} {event.sender.last_name} sent a file")
+
+
 worker.start()
 asyncio.get_event_loop().run_forever()
 client.run_until_disconnected()
