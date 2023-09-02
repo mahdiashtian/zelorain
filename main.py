@@ -10,7 +10,9 @@ import redis.asyncio as redis
 from decouple import config
 from telethon import TelegramClient, events
 from telethon import functions
+from telethon.errors.rpcerrorlist import ContactIdInvalidError
 from telethon.tl.functions.photos import UploadProfilePhotoRequest
+from telethon.tl.functions.users import GetFullUserRequest
 
 from services import delete_profile_photo
 from utils import image_set_clock
@@ -175,6 +177,36 @@ async def auto_seen(event):
         except ValueError as va:
             sender = await event.get_input_sender()
             await client.send_read_acknowledge(sender, max_id=event.id)
+
+
+@client.on(events.NewMessage(from_users=admin_list, pattern="-set block"))
+async def set_block(event):
+    if event.reply_to_msg_id is None:
+        await client.send_message(event.chat_id, "-Reply to a message!")
+    else:
+        try:
+            replied = await event.get_reply_message()
+            sender = replied.sender_id
+            await client(functions.contacts.BlockRequest(id=sender))
+            full = await client(GetFullUserRequest(sender))
+            await client.send_message(event.chat_id, f"-User {full.user.first_name} {full.user.last_name} blocked")
+        except ContactIdInvalidError:
+            await client.send_message(event.chat_id, "-The provided contact ID is invalid")
+
+
+@client.on(events.NewMessage(from_users=admin_list, pattern="-unset block"))
+async def unset_block(event):
+    if event.reply_to_msg_id is None:
+        await client.send_message(event.chat_id, "-Reply to a message!")
+    else:
+        try:
+            replied = await event.get_reply_message()
+            sender = replied.sender_id
+            await client(functions.contacts.UnblockRequest(id=sender))
+            full = await client(GetFullUserRequest(sender))
+            await client.send_message(event.chat_id, f"-User {full.user.first_name} {full.user.last_name} unblocked")
+        except ContactIdInvalidError:
+            await client.send_message(event.chat_id, "-The provided contact ID is invalid")
 
 
 worker.start()
