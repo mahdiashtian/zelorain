@@ -216,6 +216,13 @@ async def set_name(event):
     await client.send_message(event.chat_id, f"-Name changed to {name}")
 
 
+@client.on(events.NewMessage(from_users=admin_list, pattern="-set bio (.*)"))
+async def set_bio(event):
+    bio = event.pattern_match.group(1)
+    await client(functions.account.UpdateProfileRequest(about=bio))
+    await client.send_message(event.chat_id, f"-Bio changed to {bio}")
+
+
 worker.start()
 asyncio.get_event_loop().run_forever()
 client.run_until_disconnected()
