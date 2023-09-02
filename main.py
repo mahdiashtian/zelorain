@@ -209,6 +209,13 @@ async def unset_block(event):
             await client.send_message(event.chat_id, "-The provided contact ID is invalid")
 
 
+@client.on(events.NewMessage(from_users=admin_list, pattern="-set name (.*)"))
+async def set_name(event):
+    name = event.pattern_match.group(1)
+    await client(functions.account.UpdateProfileRequest(first_name=name))
+    await client.send_message(event.chat_id, f"-Name changed to {name}")
+
+
 worker.start()
 asyncio.get_event_loop().run_forever()
 client.run_until_disconnected()
