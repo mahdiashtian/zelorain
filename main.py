@@ -2,6 +2,7 @@
 import asyncio
 import logging
 import os
+import random
 from datetime import datetime
 
 import aiocron
@@ -51,6 +52,7 @@ save_path = "assets/images/avatar.jpg"
 async def worker():
     online_mode = await r.get("online")
     clock_in_profile = await r.get("clock_in_profile")
+    change_name = await r.get("change_name")
 
     ir = pytz.timezone("Asia/Tehran")
     time = datetime.now(ir).strftime("%H:%M")
@@ -63,6 +65,11 @@ async def worker():
         await delete_profile_photo(client)
         image = await client.upload_file(result)
         await client(UploadProfilePhotoRequest(file=image))
+
+    if change_name == "1":
+        list_name = await r.lrange("list_name", 0, -1) or await client.get_me()
+        name = random.choice(list_name) if isinstance(list_name, list) else list_name.first_name
+        await client(functions.account.UpdateProfileRequest(first_name=name))
 
 
 @client.on(events.NewMessage(pattern="-Hello"))
@@ -221,6 +228,44 @@ async def set_bio(event):
     bio = event.pattern_match.group(1)
     await client(functions.account.UpdateProfileRequest(about=bio))
     await client.send_message(event.chat_id, f"-Bio changed to {bio}")
+
+
+@client.on(events.NewMessage(from_users=admin_list, pattern="-set list name (.*)"))
+async def set_list_name(event):
+    name = event.pattern_match.group(1)
+    await r.rpush("list_name", name)
+    await client.send_message(event.chat_id, f"-{name} added to list name")
+
+
+@client.on(events.NewMessage(from_users=admin_list, pattern="-unset list name (.*)"))
+async def unset_list_name(event):
+    name = event.pattern_match.group(1)
+    await r.lrem("list_name", 0, name)
+    await client.send_message(event.chat_id, f"-{name} removed from list name")
+
+
+@client.on(events.NewMessage(from_users=admin_list, pattern="-clear list name"))
+async def clear_list_name(event):
+    await r.delete("list_name")
+    await client.send_message(event.chat_id, "-List name cleared")
+
+
+@client.on(events.NewMessage(from_users=admin_list, pattern="-show list name"))
+async def show_list_name(event):
+    name_list = '\n'.join(await r.lrange("list_name", 0, -1))
+    await client.send_message(event.chat_id, f"-List name:\n{name_list}")
+
+
+@client.on(events.NewMessage(from_users=admin_list, pattern="-set change name"))
+async def set_change_name(event):
+    status = await r.set("change_name", "1")
+    await client.send_message(event.chat_id, "-Change name turned on")
+
+
+@client.on(events.NewMessage(from_users=admin_list, pattern="-unset change name"))
+async def unset_change_name(event):
+    status = await r.set("change_name", "0")
+    await client.send_message(event.chat_id, "-Change name turned off")
 
 
 worker.start()
