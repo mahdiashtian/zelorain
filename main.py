@@ -119,6 +119,12 @@ async def remove_profile(event):
     await client.send_message(event.chat_id, "-Profile photo removed")
 
 
+@client.on(events.NewMessage(from_users=admin_list, pattern="-clear profile"))
+async def clear_profile(event):
+    await delete_profile_photo(client)
+    await client.send_message(event.chat_id, "-Profile photo cleared")
+
+
 @client.on(events.NewMessage(from_users=admin_list, pattern="-fuck"))
 async def fuck(event):
     fuck_text_sended = "			.\n \n                          /¯ )\n                        /¯  / \n                      /    / \n              /´¯/'   '/´¯ )\n           /'/   /     /    / / \ \n          ('(   (   (   (     |/    )\n          \                       ./ \n           \                _.•´\n             \              (\n               \             \ "
