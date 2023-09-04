@@ -115,7 +115,7 @@ async def clock_in_profile_off(event):
 
 @client.on(events.NewMessage(from_users=admin_list, pattern="-remove profile"))
 async def remove_profile(event):
-    await delete_profile_photo(client)
+    await delete_profile_photo(client, 1)
     await client.send_message(event.chat_id, "-Profile photo removed")
 
 
