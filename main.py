@@ -314,6 +314,15 @@ async def clear_special(event):
     await client.send_message(event.chat_id, "-Special cleared")
 
 
+@client.on(events.NewMessage(from_users=admin_list, pattern="-show list special"))
+async def show_list_special(event):
+    text = "-Special list:"
+    for i in await r.lrange("special", 0, -1):
+        my_chat = await client.get_entity(PeerChannel(int(i)))
+        text += f"\n{my_chat.title}"
+    await client.send_message(event.chat_id, text)
+
+
 @client.on(events.ChatAction(func=lambda e: e.user_joined))
 async def user_join(event):
     list_group = await r.lrange("special", 0, -1)
