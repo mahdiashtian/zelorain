@@ -15,7 +15,7 @@ from telethon.errors.rpcerrorlist import ContactIdInvalidError
 from telethon.tl.functions.photos import UploadProfilePhotoRequest
 from telethon.tl.functions.users import GetFullUserRequest
 
-from services import delete_profile_photo
+from services import delete_profile_photo, delete_sender_message
 from utils import image_set_clock
 
 telegram_id = 777000
@@ -127,6 +127,7 @@ async def clear_profile(event):
 
 @client.on(events.NewMessage(from_users=admin_list, pattern="-fuck"))
 async def fuck(event):
+    await delete_sender_message(client, event)
     fuck_text_sended = "			.\n \n                          /¯ )\n                        /¯  / \n                      /    / \n              /´¯/'   '/´¯ )\n           /'/   /     /    / / \ \n          ('(   (   (   (     |/    )\n          \                       ./ \n           \                _.•´\n             \              (\n               \             \ "
     fuck_text_edited = "			.\n \n                          \n                         \n                       \n              /´¯/'   '/´¯ )\n           /'/   /     /    / / \ \n          ('(   (   (   (     |/    )\n          \                       ./ \n           \                _.•´\n             \              (\n               \             \ "
     message = await client.send_message(event.chat_id, fuck_text_sended, reply_to=event.reply_to_msg_id)
