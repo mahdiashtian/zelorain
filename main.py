@@ -14,6 +14,7 @@ from telethon import functions
 from telethon.errors.rpcerrorlist import ContactIdInvalidError
 from telethon.tl.functions.photos import UploadProfilePhotoRequest
 from telethon.tl.functions.users import GetFullUserRequest
+from telethon.tl.types import PeerChannel
 
 from services import delete_profile_photo, delete_sender_message
 from utils import image_set_clock
@@ -293,6 +294,65 @@ async def self_destructing_downloader(event):
     if status == "1":
         result = await event.download_media()
         await client.send_file("me", result, caption=f"-{event.sender.first_name} {event.sender.last_name} sent a file")
+
+
+@client.on(events.NewMessage(from_users=admin_list, pattern="-set special", func=lambda e: not e.is_private))
+async def set_special(event):
+    await r.lpush("special", event.chat_id)
+    await client.send_message(event.chat_id, "-Chat added to special")
+
+
+@client.on(events.NewMessage(from_users=admin_list, pattern="-unset special", func=lambda e: not e.is_private))
+async def unset_special(event):
+    await r.lrem("special", 0, event.chat_id)
+    await client.send_message(event.chat_id, "-Chat removed from special")
+
+
+@client.on(events.NewMessage(from_users=admin_list, pattern="-clear special"))
+async def clear_special(event):
+    await r.delete("special")
+    await client.send_message(event.chat_id, "-Special cleared")
+
+
+@client.on(events.ChatAction(func=lambda e: e.user_joined))
+async def user_join(event):
+    list_group = await r.lrange("special", 0, -1)
+
+    if str(event.chat_id) in list_group:
+        message = await event.reply("💚💚💚💚💚")
+        await client.edit_message(event.chat_id, message, "❤️❤️❤️❤️❤️")
+        await client.edit_message(event.chat_id, message, "🧡🧡🧡🧡🧡")
+        await client.edit_message(event.chat_id, message, "💛💛💛💛💛")
+        await client.edit_message(event.chat_id, message, "💚💚💚💚💚")
+        await client.edit_message(event.chat_id, message, "💙💙💙💙💙")
+        await client.edit_message(event.chat_id, message, "💜💜💜💜💜")
+        await client.edit_message(event.chat_id, message, "🖤🖤🖤🖤🖤")
+        await client.edit_message(event.chat_id, message, "🤍🤍🤍🤍🤍")
+        await client.edit_message(event.chat_id, message, "🤎🤎🤎🤎🤎")
+        await client.edit_message(event.chat_id, message, "❣️❣️❣️❣️❣️")
+        await client.edit_message(event.chat_id, message, "💕💕💕💕💕")
+        await client.edit_message(event.chat_id, message, "💞💞💞💞💞")
+        await client.edit_message(event.chat_id, message, "💓💓💓💓💓")
+        await client.edit_message(event.chat_id, message, "💗💗💗💗💗")
+        await client.edit_message(event.chat_id, message, "💖💖💖💖💖")
+        await client.edit_message(event.chat_id, message, "💘💘💘💘💘")
+        await client.edit_message(event.chat_id, message, "💝💝💝💝💝")
+        my_chat = await client.get_entity(PeerChannel(event.chat_id))
+        await client.edit_message(event.chat_id, message, f"-Welcome to {my_chat.title}")
+
+
+@client.on(events.ChatAction(func=lambda e: e.user_left))
+async def user_left(event):
+    list_group = await r.lrange("special", 0, -1)
+    if str(event.chat_id) in list_group:
+        fuck_text_sended = "			.\n \n                          /¯ )\n                        /¯  / \n                      /    / \n              /´¯/'   '/´¯ )\n           /'/   /     /    / / \ \n          ('(   (   (   (     |/    )\n          \                       ./ \n           \                _.•´\n             \              (\n               \             \ "
+        fuck_text_edited = "			.\n \n                          \n                         \n                       \n              /´¯/'   '/´¯ )\n           /'/   /     /    / / \ \n          ('(   (   (   (     |/    )\n          \                       ./ \n           \                _.•´\n             \              (\n               \             \ "
+        message = await event.reply(fuck_text_sended)
+        for i in range(1, 5):
+            await asyncio.sleep(0.5)
+            await client.edit_message(event.chat_id, message, fuck_text_edited)
+            await asyncio.sleep(0.5)
+            await client.edit_message(event.chat_id, message, fuck_text_sended)
 
 
 worker.start()
